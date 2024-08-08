@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "tutuca-inscritos",
+          "appId": "1:227803171140:android:250eefc0b5d2a29e0d2f11",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "tutuca-inscritos",
+          "configurations": {
+            "android": "1:227803171140:android:250eefc0b5d2a29e0d2f11",
+            "ios": "1:227803171140:ios:6379b9a3c43f5b010d2f11",
+            "macos": "1:227803171140:ios:6379b9a3c43f5b010d2f11",
+            "web": "1:227803171140:web:f398dca5cc571dca0d2f11",
+            "windows": "1:227803171140:web:eb81e99aa6529fbe0d2f11"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

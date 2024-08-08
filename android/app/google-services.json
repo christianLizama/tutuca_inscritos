@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "227803171140",
+    "project_id": "tutuca-inscritos",
+    "storage_bucket": "tutuca-inscritos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227803171140:android:250eefc0b5d2a29e0d2f11",
+        "android_client_info": {
+          "package_name": "com.example.tutuca_inscritos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3oNO-qfbcRyIQra0pkaxAqn3EmB7EOrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
