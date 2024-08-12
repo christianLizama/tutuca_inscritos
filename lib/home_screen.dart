@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Cerrar sesión'),
-              onTap: (){
+              onTap: () {
                 _handleSignOut();
               },
             ),
@@ -250,31 +250,50 @@ class _HomeScreenState extends State<HomeScreen> {
       _formKey.currentState!.save();
 
       try {
-        // Obtener el último número de inscrito
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('inscritos')
-            .orderBy('numero', descending: true)
-            .limit(1)
-            .get();
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          // Referencia al documento del contador
+          DocumentReference counterRef = FirebaseFirestore.instance
+              .collection('counters')
+              .doc('inscritos_counter');
 
-        // Si hay inscritos, el número del nuevo inscrito es el último + 1
-        if (querySnapshot.docs.isNotEmpty) {
-          _numero = querySnapshot.docs.first['numero'] + 1;
-        } else {
-          _numero = 1;
-        }
+          // Leer el valor actual del contador dentro de la transacción
+          DocumentSnapshot counterSnapshot = await transaction.get(counterRef);
 
-        await FirebaseFirestore.instance.collection('inscritos').add({
-          'nombre': _nombre,
-          'rut': _rut,
-          'team': _team,
-          'telefono': _telefono,
-          'categoria': _categoria,
-          'numero': _numero,
-          'edad': _edad,
-          'entregado': false,
-          'fecha': DateTime.now(),
+          // Si no existe el contador, lo inicializamos en 1
+          if (!counterSnapshot.exists) {
+            transaction.set(counterRef, {'numero': 1});
+            _numero = 1;
+          } else {
+            // Si existe, obtenemos el valor actual y lo incrementamos
+            int currentNumber = counterSnapshot['numero'];
+            _numero = currentNumber + 1;
+
+            // Aumentar el contador en la base de datos
+            transaction.update(counterRef, {'numero': _numero});
+          }
+
+          // Ahora guardamos el nuevo inscrito usando el número generado
+          transaction
+              .set(FirebaseFirestore.instance.collection('inscritos').doc(), {
+            'nombre': _nombre,
+            'rut': _rut,
+            'team': _team,
+            'telefono': _telefono,
+            'categoria': _categoria,
+            'numero': _numero,
+            'edad': _edad,
+            'entregado': false,
+            'fecha': DateTime.now(),
+          });
         });
+
+        // Si todo sale bien, reseteamos el formulario
+        _formKey.currentState!.reset();
+        setState(() => _categoria = null);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Inscrito exitosamente')),
+        );
       } catch (e) {
         print('Error al conectar con Firestore: $e');
         if (!mounted) return;
@@ -285,15 +304,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text('No se pudo registrar. Revisa tu conexión a Internet.')),
         );
       }
-
-      _formKey.currentState!.reset();
-      setState(() => _categoria = null);
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inscrito exitosamente')),
-      );
     }
   }
 }
